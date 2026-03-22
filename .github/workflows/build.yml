@@ -7,21 +7,21 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04  # Use Ubuntu 22.04 instead of latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build with Buildozer Action
-      uses: ArtemSBulgakov/buildozer-action@v1
-      id: buildozer
-      with:
-        command: buildozer android debug
-        buildozer_version: stable
+    - name: Build with Buildozer in Docker
+      run: |
+        docker run --rm \
+          -v $PWD:/home/user/hostcwd \
+          kivy/buildozer:latest \
+          /bin/bash -c "cd /home/user/hostcwd && buildozer android debug"
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: levellife-apk
-        path: ${{ steps.buildozer.outputs.filename }}
+        path: bin/*.apk
