@@ -9,8 +9,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Build APK with buildozer
-        uses: kivy/kivy-ci/buildozer-action@master
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          command: buildozer android debug
-          buildozer_version: stable
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
+          pip install --upgrade pip buildozer cython
+      
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      
+      - name: Accept Android licenses
+        run: |
+          mkdir -p ~/Android/sdk
+          echo "sdk.dir=~/Android/sdk" > local.properties
+      
+      - name: Build APK
+        run: buildozer android debug
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-debug.apk
+          path: bin/*.apk
