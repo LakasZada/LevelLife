@@ -12,13 +12,6 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Cache Buildozer global directory
-        uses: actions/cache@v4
-        with:
-          path: ~/.buildozer
-          key: buildozer-global-${{ hashFiles('buildozer.spec') }}
-          restore-keys: buildozer-global-
-
       - name: Cache Buildozer directory
         uses: actions/cache@v4
         with:
@@ -35,11 +28,18 @@ jobs:
             pkg-config zlib1g-dev libncurses5-dev \
             libncursesw5-dev cmake libffi-dev libssl-dev
 
-      - name: Install Python dependencies
-        run: pip install buildozer cython
+      - name: Install Python build dependencies
+        run: pip install buildozer cython==3.0.10
+
+      - name: Accept Android SDK licenses
+        run: yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build APK
         run: buildozer -v android debug
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/27.3.13750724
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
