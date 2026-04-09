@@ -6,32 +6,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/kivy:latest-py311
     steps:
       - uses: actions/checkout@v3
       
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
-          pip install --upgrade pip buildozer cython
-      
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-      
-      - name: Accept Android licenses
-        run: |
-          mkdir -p ~/Android/sdk
-          echo "sdk.dir=~/Android/sdk" > local.properties
-      
-      - name: Build APK
+      - name: Build APK with buildozer
         run: buildozer android debug
       
       - name: Upload APK
