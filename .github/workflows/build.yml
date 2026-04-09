@@ -1,17 +1,16 @@
-name: Build
+name: Build LevelLife APK
 on:
   push:
     branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      
+      - name: Build APK with buildozer
+        uses: kivy/kivy-ci/buildozer-action@master
         with:
-          python-version: '3.x'
-      - name: Install buildozer
-        run: pip install buildozer
-      - name: Build APK
-        run: buildozer android debug
+          command: buildozer android debug
+          buildozer_version: stable
